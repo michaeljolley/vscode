@@ -1,69 +1,56 @@
-import chai from "chai";
-import Sinon from "sinon";
-import vscode from "vscode";
-import { HelpCommands } from "../../../src/commands";
-import { LocalTelemetry } from "../../../src/telemetry";
-import { HelpViewDataProvider } from "../../../src/views";
-import { mocks } from "../../mocks";
-
-chai.should();
+import * as assert from "assert";
+import * as Sinon from "sinon";
+import * as vscode from "vscode";
+import { HelpCommands } from "../../../commands";
+import { HelpViewDataProvider } from "../../../views";
+import { mocks } from "../../mocks/vscode";
+import { Telemetry } from "../../../telemetry";
 
 suite("Commands:Help", function () {
-  const telemetry = new LocalTelemetry();
-  const telemetrySendEvent = Sinon.stub(telemetry, "sendEvent");
   const openExternalStub = Sinon.stub(vscode.env, "openExternal");
+  const telemetryStub = Sinon.stub(Telemetry, "sendTelemetryEvent");
 
   const viewProvider = new HelpViewDataProvider();
 
   const helpCommands = new HelpCommands(
     mocks.extensionContextMock.subscriptions,
-    telemetry,
     viewProvider,
   );
 
   this.beforeEach(() => {
-    telemetrySendEvent.resetHistory();
     openExternalStub.resetHistory();
+    telemetryStub.resetHistory();
   });
 
   this.afterAll(() => {
-    telemetrySendEvent.restore();
     openExternalStub.restore();
+    telemetryStub.restore();
   });
 
   test("refresh refreshes appropriate view", async () => {
     const stub = Sinon.stub(viewProvider, "refresh");
 
     helpCommands.refresh();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
   test("openDocs opens external url", async () => {
     helpCommands.openDocs();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    openExternalStub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(openExternalStub.calledOnce, true);
   });
 
   test("openReportIssue fires an extension command", async () => {
     const stub = Sinon.stub(vscode.commands, "executeCommand");
 
     helpCommands.openReportIssue();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
-  });
-
-  test("openSurvey opens external url", async () => {
-    helpCommands.openSurvey();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    openExternalStub.calledOnce.should.eq(true);
-  });
-
-  test("openTelemetryInfo opens external url", async () => {
-    helpCommands.openTelemetryInfo();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    openExternalStub.calledOnce.should.eq(true);
   });
 });

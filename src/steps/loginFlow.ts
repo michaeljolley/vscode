@@ -4,8 +4,8 @@ export interface LoginState {
   title: string;
   step: number;
   totalSteps: number;
-  api_key: string;
-  api_secret: string;
+  apiKey: string;
+  apiSecret: string;
 }
 
 const title = "Provide Vonage API Credentials";
@@ -21,11 +21,11 @@ export abstract class LoginFlow {
     input: MultiStepInput,
     state: Partial<LoginState>,
   ) {
-    state.api_key = await input.showInputBox({
+    state.apiKey = await input.showInputBox({
       title,
       step: 1,
       totalSteps: 2,
-      value: typeof state.api_key === "string" ? state.api_key : "",
+      value: typeof state.apiKey === "string" ? state.apiKey : "",
       prompt: "Vonage API Key",
       validate: this.validateString,
       shouldResume: this.shouldResume,
@@ -37,11 +37,11 @@ export abstract class LoginFlow {
     input: MultiStepInput,
     state: Partial<LoginState>,
   ) {
-    state.api_secret = await input.showInputBox({
+    state.apiSecret = await input.showInputBox({
       title,
       step: 2,
       totalSteps: 2,
-      value: typeof state.api_secret === "string" ? state.api_secret : "",
+      value: typeof state.apiSecret === "string" ? state.apiSecret : "",
       prompt: "Vonage API Secret",
       validate: this.validateString,
       shouldResume: this.shouldResume,

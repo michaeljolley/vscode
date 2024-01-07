@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
-import chai from "chai";
-import Sinon from "sinon";
-import assert from "assert";
-import { NumbersViewDataProvider, NumberTreeItem } from "../../../src/views";
-import { TestMemento, vonage } from "../../mocks";
-import { VonageClient } from "../../../src/client/vonageClient";
-
-chai.should();
+import * as Sinon from "sinon";
+import * as assert from "assert";
+import { NumbersViewDataProvider, NumberTreeItem } from "../../../views";
+import { vonage } from "../../mocks/vonage";
+import { TestMemento } from "../../mocks/vscode";
+import { VonageClient } from "../../../client/vonageClient";
 
 suite("Views:Number", function () {
   const storage = new TestMemento();
@@ -21,13 +19,14 @@ suite("Views:Number", function () {
   test("buildTree displays numbers correctly", async () => {
     const treeItems = await viewProvider.getChildren();
 
-    treeItems.length.should.eq(1);
+    assert.equal(treeItems.length, 1);
 
     const treeItem = treeItems[0];
-    treeItem.should.exist;
+
+    assert.notEqual(treeItem, undefined);
     assert.notDeepStrictEqual(treeItem.label, undefined);
     if (treeItem && treeItem.label) {
-      treeItem.label.should.eq(`+${vonage.numberMock.msisdn}`);
+      assert.equal(treeItem.label, `+${vonage.numberMock.msisdn}`);
     }
   });
 
@@ -42,8 +41,8 @@ suite("Views:Number", function () {
 
     const clipboard = await vscode.env.clipboard.readText();
 
-    clipboard.should.eq(vonage.numberMock.msisdn);
-    windowShowInformationMessageStub.calledOnce.should.eq(true);
+    assert.equal(clipboard, vonage.numberMock.msisdn);
+    assert.equal(windowShowInformationMessageStub.calledOnce, true);
 
     windowShowInformationMessageStub.restore();
   });

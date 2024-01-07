@@ -1,22 +1,27 @@
-import chai from "chai";
-import assert from "assert";
-import Sinon from "sinon";
-import { VonageClient } from "../../../src/client/vonageClient";
-import { AccountViewDataProvider } from "../../../src/views";
-import { mocks, TestMemento } from "../../mocks";
-import { StorageKeys } from "../../../src/enums";
-
-chai.should();
+import * as assert from "assert";
+import * as Sinon from "sinon";
+import { VonageClient } from "../../../client/vonageClient";
+import { AccountViewDataProvider } from "../../../views";
+import { TestMemento } from "../../mocks/vscode";
+import { StorageKeys } from "../../../enums/storageKeys";
+import { Telemetry } from "../../../telemetry";
 
 suite("Views:Account", function () {
+  const telemetryStub = Sinon.stub(Telemetry, "sendTelemetryEvent");
+
   const storage = new TestMemento();
   let viewProvider: AccountViewDataProvider;
   const fakeGetBalance = () => Promise.resolve(1.784);
   Sinon.replace(VonageClient.account, "getBalance", fakeGetBalance);
 
-  this.beforeEach(function () {
+  this.beforeEach(() => {
     storage.storage = new Map();
     viewProvider = new AccountViewDataProvider(storage);
+    telemetryStub.resetHistory();
+  });
+
+  this.afterAll(() => {
+    telemetryStub.restore();
   });
 
   test("buildTree hides balance when appropriate", async () => {
@@ -25,10 +30,12 @@ suite("Views:Account", function () {
     const treeItems = await viewProvider.getChildren();
 
     const balanceTreeItem = treeItems[0];
-    balanceTreeItem.should.exist;
+
+    assert.notEqual(balanceTreeItem, undefined);
     assert.notDeepStrictEqual(balanceTreeItem.label, undefined);
+
     if (balanceTreeItem && balanceTreeItem.label) {
-      balanceTreeItem.label.should.eq(`Balance: € ----`);
+      assert.equal(balanceTreeItem.label, `Balance: € ----`);
     }
   });
 
@@ -36,10 +43,12 @@ suite("Views:Account", function () {
     const treeItems = await viewProvider.getChildren();
 
     const balanceTreeItem = treeItems[0];
-    balanceTreeItem.should.exist;
+
+    assert.notEqual(balanceTreeItem, undefined);
     assert.notDeepStrictEqual(balanceTreeItem.label, undefined);
+
     if (balanceTreeItem && balanceTreeItem.label) {
-      balanceTreeItem.label.should.eq(`Balance: € 1.78`);
+      assert.equal(balanceTreeItem.label, `Balance: € 1.78`);
     }
   });
 
@@ -47,6 +56,6 @@ suite("Views:Account", function () {
     await viewProvider.toggleBalanceView();
 
     const shouldHide = storage.get(StorageKeys.hideAccountBalance);
-    shouldHide.should.eq(true);
+    assert.equal(shouldHide, true);
   });
 });

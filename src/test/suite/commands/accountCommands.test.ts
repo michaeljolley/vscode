@@ -1,39 +1,36 @@
-import chai from "chai";
-import Sinon from "sinon";
-import { AccountCommands } from "../../../src/commands";
-import { LocalTelemetry } from "../../../src/telemetry";
-import { AccountViewDataProvider } from "../../../src/views";
-import { mocks } from "../../mocks";
-
-chai.should();
+import * as Sinon from "sinon";
+import * as assert from "assert";
+import { AccountCommands } from "../../../commands";
+import { AccountViewDataProvider } from "../../../views";
+import { mocks } from "../../mocks/vscode";
+import { Telemetry } from "../../../telemetry";
 
 suite("Commands:Account", function () {
-  const telemetry = new LocalTelemetry();
-  const telemetrySendEvent = Sinon.stub(telemetry, "sendEvent");
   const viewProvider = new AccountViewDataProvider(
     mocks.extensionContextMock.globalState,
   );
+  const telemetryStub = Sinon.stub(Telemetry, "sendTelemetryEvent");
 
   const accountCommands = new AccountCommands(
     mocks.extensionContextMock.subscriptions,
-    telemetry,
     viewProvider,
   );
 
-  this.beforeEach(function () {
-    telemetrySendEvent.resetHistory();
+  this.beforeEach(() => {
+    telemetryStub.resetHistory();
   });
 
-  this.afterAll(function () {
-    telemetrySendEvent.restore();
+  this.afterAll(() => {
+    telemetryStub.restore();
   });
 
   test("refresh calls appropriate view", async () => {
     const stub = Sinon.stub(viewProvider, "refresh");
 
     accountCommands.refresh();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -41,8 +38,9 @@ suite("Commands:Account", function () {
     const stub = Sinon.stub(viewProvider, "toggleBalanceView");
 
     accountCommands.toggleBalanceView();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 });

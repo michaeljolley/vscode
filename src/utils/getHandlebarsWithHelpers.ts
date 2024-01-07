@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import * as Handlebars from "handlebars";
 
 export function getHandlebarsWithHelpers(): typeof Handlebars {
   const handlebars = Handlebars;

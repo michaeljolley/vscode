@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as assert from "assert";
-import * as utils from "../../../src/utils";
+import * as utils from "../../../utils";
 
 suite("Utils:getExtensionInfo", () => {
   test("returns vonage.vscode extension", async () => {

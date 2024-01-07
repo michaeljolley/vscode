@@ -1,25 +1,25 @@
-import chai from "chai";
-import Sinon from "sinon";
+import * as assert from "assert";
+import * as Sinon from "sinon";
 import * as vscode from "vscode";
-import { AuthCommands } from "../../../src/commands";
-import { LocalTelemetry } from "../../../src/telemetry";
-import { mocks, vonage } from "../../mocks";
-import { Auth } from "../../../src/auth";
-import { LoginFlow } from "../../../src/steps";
-
-chai.should();
+import { AuthCommands } from "../../../commands";
+import { mocks } from "../../mocks/vscode";
+import { vonage } from "../../mocks/vonage";
+import { Auth } from "../../../auth";
+import { LoginFlow } from "../../../steps";
+import { Telemetry } from "../../../telemetry";
 
 suite("Commands:Auth", function () {
-  const telemetry: LocalTelemetry = new LocalTelemetry();
-  const telemetrySendEvent = Sinon.stub(telemetry, "sendEvent");
-
   const authCommands: AuthCommands = new AuthCommands(
     mocks.extensionContextMock.subscriptions,
-    telemetry,
   );
+  const telemetryStub = Sinon.stub(Telemetry, "sendTelemetryEvent");
 
-  this.afterEach(() => {
-    telemetrySendEvent.reset();
+  this.beforeEach(() => {
+    telemetryStub.resetHistory();
+  });
+
+  this.afterAll(() => {
+    telemetryStub.restore();
   });
 
   test("login renders correct user flow", async () => {
@@ -29,9 +29,8 @@ suite("Commands:Auth", function () {
 
     await authCommands.login();
 
-    telemetrySendEvent.calledOnce.should.eq(true);
-    loginFlowStub.calledOnce.should.eq(true);
-
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(loginFlowStub.calledOnce, true);
     loginFlowStub.restore();
   });
 
@@ -46,8 +45,8 @@ suite("Commands:Auth", function () {
 
     await authCommands.login();
 
-    windowShowErrorMessageStub.calledOnce.should.eq(true);
-
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(windowShowErrorMessageStub.calledOnce, true);
     windowShowErrorMessageStub.restore();
     loginFlowStub.restore();
   });
@@ -60,7 +59,8 @@ suite("Commands:Auth", function () {
 
     await authCommands.login();
 
-    authLoginStub.calledOnce.should.eq(true);
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(authLoginStub.calledOnce, true);
 
     authLoginStub.restore();
     loginFlowStub.restore();
@@ -71,8 +71,8 @@ suite("Commands:Auth", function () {
 
     await authCommands.logout();
 
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 });

@@ -1,24 +1,28 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+import { LineType } from "@vonage/numbers/dist/enums/LineType";
+import { Feature } from "@vonage/numbers/dist/enums/Feature";
+
 export const vonage = {
   loginStateValidMock: {
     title: "",
     step: 2,
     totalSteps: 2,
-    api_key: "fakeApiKey",
-    api_secret: "fakeApiSecret",
+    apiKey: "fakeApiKey",
+    apiSecret: "fakeApiSecret",
   },
   loginStateInvalidMock: {
     title: "",
     step: 2,
     totalSteps: 2,
-    api_key: "",
-    api_secret: "fakeApiSecret",
+    apiKey: "",
+    apiSecret: "fakeApiSecret",
   },
   numberMock: {
     msisdn: "15555555555",
-    type: "voice",
+    type: LineType.LANDLINE,
     country: "US",
     cost: "0",
-    features: ["voice", "sms"],
+    features: [Feature.VOICE, Feature.SMS],
     moHttpUrl: "",
     messagesCallbackType: "",
     messagesCallbackValue: "",

@@ -176,5 +176,6 @@ export class NumbersAPI {
         },
       );
     }
+    return false;
   }
 }

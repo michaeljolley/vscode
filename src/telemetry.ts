@@ -30,4 +30,8 @@ export abstract class Telemetry {
   ): void {
     this.reporter.sendTelemetryErrorEvent(eventName, properties, measurements);
   }
+
+  public static dispose() {
+    this.reporter.dispose();
+  }
 }

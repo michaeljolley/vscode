@@ -3,198 +3,217 @@ import { Telemetry } from "../telemetry";
 import { ApplicationTreeItem, ApplicationViewDataProvider } from "../views";
 
 export class ApplicationCommands {
-  constructor(
-    subscriptions: { dispose(): any }[],
-    private telemetry: Telemetry,
-    private vonageApplicationViewDataProvider: ApplicationViewDataProvider,
-  ) {
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.addApp", this.addApp),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.updateApp", this.updateApp),
-    );
-
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.deleteApp", this.deleteApp),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand(
-        "vonage.app.refreshAppsList",
-        this.refreshAppsList,
-      ),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.link", this.linkApp),
-    );
-
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.voice.add", this.voiceAdd),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand(
-        "vonage.app.voice.update",
-        this.voiceUpdate,
-      ),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand(
-        "vonage.app.voice.delete",
-        this.voiceDelete,
-      ),
-    );
-
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.rtc.add", this.rtcAdd),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.rtc.update", this.rtcUpdate),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.rtc.delete", this.rtcDelete),
-    );
-
-    subscriptions.push(
-      vscode.commands.registerCommand(
-        "vonage.app.messages.add",
-        this.messagesAdd,
-      ),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand(
-        "vonage.app.messages.update",
-        this.messagesUpdate,
-      ),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand(
-        "vonage.app.messages.delete",
-        this.messagesDelete,
-      ),
-    );
-
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.vbc.add", this.vbcAdd),
-    );
-    subscriptions.push(
-      vscode.commands.registerCommand("vonage.app.vbc.delete", this.vbcDelete),
-    );
-  }
-
-  /** Application commands */
   refreshAppsList = () => {
-    this.telemetry.sendEvent("Applications", "app.refreshAppsList");
+    Telemetry.sendTelemetryEvent("vonage:app:refreshAppsList");
     this.vonageApplicationViewDataProvider.refresh();
   };
 
   addApp = () => {
-    this.telemetry.sendEvent("Applications", "app.addApp");
+    Telemetry.sendTelemetryEvent("vonage:app:addApp");
     this.vonageApplicationViewDataProvider.createApplication();
   };
 
   updateApp = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.updateApp");
+    Telemetry.sendTelemetryEvent("vonage:app:updateApp");
     if (node) {
       this.vonageApplicationViewDataProvider.updateApplication(node);
     }
   };
 
   deleteApp = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.deleteApp");
+    Telemetry.sendTelemetryEvent("vonage:app:deleteApp");
     if (node) {
       this.vonageApplicationViewDataProvider.deleteApplication(node);
     }
   };
 
   linkApp = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.link");
+    Telemetry.sendTelemetryEvent("vonage:app:link");
     if (node) {
       this.vonageApplicationViewDataProvider.linkApplication(node);
     }
   };
 
-  /** Voice commands */
-
   voiceAdd = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.voice.add");
+    Telemetry.sendTelemetryEvent("vonage:voice:add");
     if (node) {
       this.vonageApplicationViewDataProvider.addVoice(node);
     }
   };
 
   voiceUpdate = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.voice.update");
+    Telemetry.sendTelemetryEvent("vonage:voice:update");
     if (node) {
       this.vonageApplicationViewDataProvider.updateVoice(node);
     }
   };
 
   voiceDelete = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.voice.delete");
+    Telemetry.sendTelemetryEvent("vonage:voice:delete");
     if (node) {
       this.vonageApplicationViewDataProvider.deleteVoice(node);
     }
   };
 
-  /** RTC commands */
-
   rtcAdd = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.rtc.add");
+    Telemetry.sendTelemetryEvent("vonage:rtc:add");
     if (node) {
       this.vonageApplicationViewDataProvider.addRTC(node);
     }
   };
 
   rtcUpdate = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.rtc.update");
+    Telemetry.sendTelemetryEvent("vonage:rtc:update");
     if (node) {
       this.vonageApplicationViewDataProvider.updateRTC(node);
     }
   };
 
   rtcDelete = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.rtc.delete");
+    Telemetry.sendTelemetryEvent("vonage:rtc:delete");
     if (node) {
       this.vonageApplicationViewDataProvider.deleteRTC(node);
     }
   };
 
-  /** Messages commands */
-
   messagesAdd = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.messages.add");
+    Telemetry.sendTelemetryEvent("vonage:messages:add");
     if (node) {
       this.vonageApplicationViewDataProvider.addMessages(node);
     }
   };
 
   messagesUpdate = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.messages.update");
+    Telemetry.sendTelemetryEvent("vonage:messages:update");
     if (node) {
       this.vonageApplicationViewDataProvider.updateMessages(node);
     }
   };
 
   messagesDelete = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.messages.delete");
+    Telemetry.sendTelemetryEvent("vonage:messages:delete");
     if (node) {
       this.vonageApplicationViewDataProvider.deleteMessages(node);
     }
   };
 
-  /** VBC commands */
-
   vbcAdd = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.vbc.add");
+    Telemetry.sendTelemetryEvent("vonage:vbc:add");
     if (node) {
       this.vonageApplicationViewDataProvider.addVBC(node);
     }
   };
 
   vbcDelete = (node?: ApplicationTreeItem) => {
-    this.telemetry.sendEvent("Applications", "app.vbc.delete");
+    Telemetry.sendTelemetryEvent("vonage:vbc:delete");
     if (node) {
       this.vonageApplicationViewDataProvider.deleteVBC(node);
     }
   };
+
+  private addAppCommand = vscode.commands.registerCommand(
+    "vonage.app.addApp",
+    this.addApp,
+  );
+  private updateAppCommand = vscode.commands.registerCommand(
+    "vonage.app.updateApp",
+    this.updateApp,
+  );
+  private deleteAppCommand = vscode.commands.registerCommand(
+    "vonage.app.deleteApp",
+    this.deleteApp,
+  );
+  private refreshAppsListCommand = vscode.commands.registerCommand(
+    "vonage.app.refreshAppsList",
+    this.refreshAppsList,
+  );
+  private linkAppCommand = vscode.commands.registerCommand(
+    "vonage.app.link",
+    this.linkApp,
+  );
+  private voiceAddCommand = vscode.commands.registerCommand(
+    "vonage.app.voice.add",
+    this.voiceAdd,
+  );
+  private voiceUpdateCommand = vscode.commands.registerCommand(
+    "vonage.app.voice.update",
+    this.voiceUpdate,
+  );
+  private voiceDeleteCommand = vscode.commands.registerCommand(
+    "vonage.app.voice.delete",
+    this.voiceDelete,
+  );
+  private rtcAddCommand = vscode.commands.registerCommand(
+    "vonage.app.rtc.add",
+    this.rtcAdd,
+  );
+  private rtcUpdateCommand = vscode.commands.registerCommand(
+    "vonage.app.rtc.update",
+    this.rtcUpdate,
+  );
+  private rtcDeleteCommand = vscode.commands.registerCommand(
+    "vonage.app.rtc.delete",
+    this.rtcDelete,
+  );
+  private messagesAddCommand = vscode.commands.registerCommand(
+    "vonage.app.messages.add",
+    this.messagesAdd,
+  );
+  private messagesUpdateCommand = vscode.commands.registerCommand(
+    "vonage.app.messages.update",
+    this.messagesUpdate,
+  );
+  private messagesDeleteCommand = vscode.commands.registerCommand(
+    "vonage.app.messages.delete",
+    this.messagesDelete,
+  );
+  private vbcAddCommand = vscode.commands.registerCommand(
+    "vonage.app.vbc.add",
+    this.vbcAdd,
+  );
+  private vbcDeleteCommand = vscode.commands.registerCommand(
+    "vonage.app.vbc.delete",
+    this.vbcDelete,
+  );
+
+  constructor(
+    subscriptions: { dispose(): any }[],
+    private vonageApplicationViewDataProvider: ApplicationViewDataProvider,
+  ) {
+    subscriptions.push(this.addAppCommand);
+    subscriptions.push(this.updateAppCommand);
+    subscriptions.push(this.deleteAppCommand);
+    subscriptions.push(this.refreshAppsListCommand);
+    subscriptions.push(this.linkAppCommand);
+    subscriptions.push(this.voiceAddCommand);
+    subscriptions.push(this.voiceUpdateCommand);
+    subscriptions.push(this.voiceDeleteCommand);
+    subscriptions.push(this.rtcAddCommand);
+    subscriptions.push(this.rtcUpdateCommand);
+    subscriptions.push(this.rtcDeleteCommand);
+    subscriptions.push(this.messagesAddCommand);
+    subscriptions.push(this.messagesUpdateCommand);
+    subscriptions.push(this.messagesDeleteCommand);
+    subscriptions.push(this.vbcAddCommand);
+    subscriptions.push(this.vbcDeleteCommand);
+  }
+
+  dispose() {
+    this.addAppCommand.dispose();
+    this.updateAppCommand.dispose();
+    this.deleteAppCommand.dispose();
+    this.refreshAppsListCommand.dispose();
+    this.linkAppCommand.dispose();
+    this.voiceAddCommand.dispose();
+    this.voiceUpdateCommand.dispose();
+    this.voiceDeleteCommand.dispose();
+    this.rtcAddCommand.dispose();
+    this.rtcUpdateCommand.dispose();
+    this.rtcDeleteCommand.dispose();
+    this.messagesAddCommand.dispose();
+    this.messagesUpdateCommand.dispose();
+    this.messagesDeleteCommand.dispose();
+    this.vbcAddCommand.dispose();
+    this.vbcDeleteCommand.dispose();
+  }
 }

@@ -13,10 +13,35 @@ import {
   HelpCommands,
   NumbersCommands,
 } from "./commands";
-import { authStatusEventEmitter } from "./emitters";
-import { Subscriptions } from "./subscriptions";
+import { Credential } from "./types/credential";
+import {
+  authStatusEventEmitter,
+  numberAssignmentEventEmitter,
+} from "./emitters";
+import { Telemetry } from "./telemetry";
+
+let authCommands: AuthCommands;
+let applicationCommands: ApplicationCommands;
+let accountCommands: AccountCommands;
+let numbersCommands: NumbersCommands;
+let helpCommands: HelpCommands;
 
 export async function activate(context: vscode.ExtensionContext) {
+  Telemetry.initialize(context);
+
+  /**
+   * Set a global context item `vonage:authenticated`. This
+   * setting is used to determine what commands/views/etc are
+   * available to the user. The credentials are also used
+   * when making requests from the Vonage API.
+   */
+  const authenticated = await Auth.isAuthenticated();
+  vscode.commands.executeCommand(
+    "setContext",
+    "vonage:authenticated",
+    authenticated,
+  );
+
   /**
    * Register commands & views
    */
@@ -29,94 +54,43 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   const helpViewDataProvider = new HelpViewDataProvider();
 
-  new AuthCommands(subscriptions, authStatusEventEmitter);
-
-  const applicationCommands = new ApplicationCommands(
-    subscriptions,
+  authCommands = new AuthCommands(context.subscriptions);
+  applicationCommands = new ApplicationCommands(
+    context.subscriptions,
     applicationViewDataProvider,
   );
-  const accountCommands = new AccountCommands(
-    subscriptions,
+  accountCommands = new AccountCommands(
+    context.subscriptions,
     accountViewDataProvider,
   );
-  const numbersCommands = new NumbersCommands(
-    subscriptions,
+  numbersCommands = new NumbersCommands(
+    context.subscriptions,
     numbersViewDataProvider,
   );
-  const helpCommands = new HelpCommands(subscriptions, helpViewDataProvider);
+  helpCommands = new HelpCommands(context.subscriptions, helpViewDataProvider);
 
-  Subscriptions.activate(context.subscriptions);
-
-  /**
-   * Register changes in authentication to update views
-   * @param credentials
-   */
-  const authStatusChanged = async (credentials: Credentials) => {
+  const authStatusChanged = async (credentials: Credential) => {
     applicationCommands.refreshAppsList();
     numbersCommands.refreshNumbersList();
     await accountCommands.refresh();
     await helpCommands.refresh();
   };
+  authStatusEventEmitter.event(authStatusChanged);
 
-  Auth.onAuthStatusChanged(authStatusChanged);
+  const numberAssignmentChanged = async () => {
+    applicationCommands.refreshAppsList();
+  };
+  numberAssignmentEventEmitter.event(numberAssignmentChanged);
 }
 
 /**
  * Clean up the extension resources.
  */
-export async function deactivate() {}
-
-export class Extension {
-  private onAuthStatusChangedEvent = new vscode.EventEmitter<Credentials>();
-
-  /**
-   * Activate the extension
-   */
-  activate = async () => {
-    /**
-     * Set a global context item `vonage:authenticated`. This
-     * setting is used to determine what commands/views/etc are
-     * available to the user. The credentials are also used
-     * when making requests from the Vonage API.
-     */
-    const authenticated = await Auth.isAuthenticated();
-    vscode.commands.executeCommand(
-      "setContext",
-      "vonage:authenticated",
-      authenticated,
-    );
-
-    const numberAssignmentChanged = async () => {
-      applicationCommands.refreshAppsList();
-    };
-    numbersViewDataProvider.onNumberAssignmentChanged(numberAssignmentChanged);
-
-    /**
-     * Register tree views within activity bar
-     */
-    vscode.window.createTreeView("vonageAppView", {
-      treeDataProvider: applicationViewDataProvider,
-      showCollapseAll: false,
-    });
-    vscode.window.createTreeView("vonageNumbersView", {
-      treeDataProvider: numbersViewDataProvider,
-      showCollapseAll: false,
-    });
-    vscode.window.createTreeView("vonageAccountView", {
-      treeDataProvider: accountViewDataProvider,
-      showCollapseAll: false,
-    });
-    vscode.window.createTreeView("vonageHelpView", {
-      treeDataProvider: helpViewDataProvider,
-      showCollapseAll: false,
-    });
-  };
-
-  deactivate = async () => {
-    /**
-     * Sign out and dispose of all credentials
-     */
-    Auth.logout();
-    Auth.dispose();
-  };
+export async function deactivate() {
+  authCommands?.dispose();
+  applicationCommands?.dispose();
+  accountCommands?.dispose();
+  numbersCommands?.dispose();
+  helpCommands?.dispose();
+  Telemetry.dispose();
 }

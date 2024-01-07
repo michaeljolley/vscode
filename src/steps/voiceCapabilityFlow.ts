@@ -6,13 +6,13 @@ export interface VoiceCapabilityState {
   step: number;
   totalSteps: number;
   name: string;
-  public_key: string;
-  answer_url_address: string;
-  answer_url_http_method: string;
-  fallback_answer_url_address: string;
-  fallback_answer_url_http_method: string;
-  event_url_address: string;
-  event_url_http_method: string;
+  publicKey: string;
+  answerUrlAddress: string;
+  answerUrlHttpMethod: string;
+  fallbackAnswerUrlAddress: string;
+  fallbackAnswerUrlHttpMethod: string;
+  eventUrlAddress: string;
+  eventUrlHttpMethod: string;
 }
 
 export abstract class VoiceCapabilityFlow {
@@ -26,17 +26,17 @@ export abstract class VoiceCapabilityFlow {
     this.title = title;
 
     if (existingState) {
-      state.answer_url_address =
+      state.answerUrlAddress =
         existingState.application.capabilities.voice.webhooks.answer_url.address;
-      state.answer_url_http_method =
+      state.answerUrlHttpMethod =
         existingState.application.capabilities.voice.webhooks.answer_url.http_method;
-      state.fallback_answer_url_address =
+      state.fallbackAnswerUrlAddress =
         existingState.application.capabilities.voice.webhooks.fallback_answer_url.address;
-      state.fallback_answer_url_http_method =
+      state.fallbackAnswerUrlHttpMethod =
         existingState.application.capabilities.voice.webhooks.fallback_answer_url.http_method;
-      state.event_url_address =
+      state.eventUrlAddress =
         existingState.application.capabilities.voice.webhooks.event_url.address;
-      state.event_url_http_method =
+      state.eventUrlHttpMethod =
         existingState.application.capabilities.voice.webhooks.event_url.http_method;
     }
 
@@ -50,13 +50,13 @@ export abstract class VoiceCapabilityFlow {
     input: MultiStepInput,
     state: Partial<VoiceCapabilityState>,
   ) {
-    state.answer_url_address = await input.showInputBox({
+    state.answerUrlAddress = await input.showInputBox({
       title: this.title,
       step: 1,
       totalSteps: 6,
       value:
-        typeof state.answer_url_address === "string"
-          ? state.answer_url_address
+        typeof state.answerUrlAddress === "string"
+          ? state.answerUrlAddress
           : "",
       prompt: "Answer Webhook Url",
       validate: this.validateAddress,
@@ -76,12 +76,12 @@ export abstract class VoiceCapabilityFlow {
       placeholder: "Answer Webhook Http Method",
       items: getHTTPMethods(),
       activeItem:
-        typeof state.answer_url_http_method !== "string"
-          ? state.answer_url_http_method
+        typeof state.answerUrlHttpMethod !== "string"
+          ? state.answerUrlHttpMethod
           : undefined,
       shouldResume: this.shouldResume,
     });
-    state.answer_url_http_method = result.label;
+    state.answerUrlHttpMethod = result.label;
     return (input: MultiStepInput) =>
       this.inputFallbackUrlAddress(input, state);
   }
@@ -90,13 +90,13 @@ export abstract class VoiceCapabilityFlow {
     input: MultiStepInput,
     state: Partial<VoiceCapabilityState>,
   ) {
-    state.fallback_answer_url_address = await input.showInputBox({
+    state.fallbackAnswerUrlAddress = await input.showInputBox({
       title: this.title,
       step: 3,
       totalSteps: 6,
       value:
-        typeof state.fallback_answer_url_address === "string"
-          ? state.fallback_answer_url_address
+        typeof state.fallbackAnswerUrlAddress === "string"
+          ? state.fallbackAnswerUrlAddress
           : "",
       prompt: "Fallback Webhook Url",
       validate: this.validateAddress,
@@ -117,12 +117,12 @@ export abstract class VoiceCapabilityFlow {
       placeholder: "Fallback Webhook Http Method",
       items: getHTTPMethods(),
       activeItem:
-        typeof state.fallback_answer_url_http_method !== "string"
-          ? state.fallback_answer_url_http_method
+        typeof state.fallbackAnswerUrlHttpMethod !== "string"
+          ? state.fallbackAnswerUrlHttpMethod
           : undefined,
       shouldResume: this.shouldResume,
     });
-    state.fallback_answer_url_http_method = result.label;
+    state.fallbackAnswerUrlHttpMethod = result.label;
     return (input: MultiStepInput) => this.inputEventUrlAddress(input, state);
   }
 
@@ -130,14 +130,12 @@ export abstract class VoiceCapabilityFlow {
     input: MultiStepInput,
     state: Partial<VoiceCapabilityState>,
   ) {
-    state.event_url_address = await input.showInputBox({
+    state.eventUrlAddress = await input.showInputBox({
       title: this.title,
       step: 5,
       totalSteps: 6,
       value:
-        typeof state.event_url_address === "string"
-          ? state.event_url_address
-          : "",
+        typeof state.eventUrlAddress === "string" ? state.eventUrlAddress : "",
       prompt: "Event Webhook Url",
       validate: this.validateAddress,
       shouldResume: this.shouldResume,
@@ -156,12 +154,12 @@ export abstract class VoiceCapabilityFlow {
       placeholder: "Event Webhook Http Method",
       items: getHTTPMethods(),
       activeItem:
-        typeof state.event_url_http_method !== "string"
-          ? state.event_url_http_method
+        typeof state.eventUrlHttpMethod !== "string"
+          ? state.eventUrlHttpMethod
           : undefined,
       shouldResume: this.shouldResume,
     });
-    state.event_url_http_method = result.label;
+    state.eventUrlHttpMethod = result.label;
   }
 
   private static shouldResume() {

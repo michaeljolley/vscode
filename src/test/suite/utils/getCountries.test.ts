@@ -1,9 +1,7 @@
-import chai, { expect } from "chai";
-import * as utils from "../../../src/utils";
-import { StorageKeys } from "../../../src/enums";
+import * as assert from "assert";
+import * as utils from "../../../utils";
+import { StorageKeys } from "../../../enums/storageKeys";
 import { TestMemento } from "../../mocks/vscode";
-
-chai.should();
 
 suite("Utils:getCountries", function () {
   const storage = new TestMemento();
@@ -18,13 +16,16 @@ suite("Utils:getCountries", function () {
 
     const selectedItem = countryList.find((f) => f.picked);
 
-    expect(selectedItem).to.exist;
-    expect(selectedItem?.description).to.eq("US");
+    assert.notEqual(selectedItem, undefined);
+    assert.equal(selectedItem?.description, "US");
   });
 
   test("returns list of countries with no picked items when never used", async () => {
     const countryList = utils.getCountries(storage);
 
-    expect(countryList.find((f) => f.picked)).not.to.exist;
+    assert.equal(
+      countryList.find((f) => f.picked),
+      undefined,
+    );
   });
 });

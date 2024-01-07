@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as vscode from "vscode";
+import { NumbersOwnedNumber } from "@vonage/numbers";
 import { openUrl, showWarningMessage } from "../utils";
 import { BaseTreeViewDataProvider, NumberTreeItem } from "./trees";
 import { ApplicationTreeItem } from "./trees";
@@ -8,7 +10,7 @@ import {
   RTCCapabilityFlow,
   MessageCapabilityFlow,
 } from "../steps";
-import VonageClient from "../client/vonageClient";
+import { VonageClient } from "../client/vonageClient";
 
 const delayedLoad = () => {
   return new Promise((resolve) => {
@@ -38,7 +40,7 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
   ): Promise<NumberTreeItem[]> {
     if (appId) {
       const numbers = await VonageClient.numbers.getNumbers(appId);
-      return numbers.map((n: INumber) => {
+      return numbers.map((n: NumbersOwnedNumber) => {
         return new NumberTreeItem(n);
       });
     }
@@ -79,7 +81,7 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
 
     const application = node.application;
     application.name = state.name;
-    application.public_key = state.public_key;
+    application.publicKey = state.publicKey;
 
     const updateResult = await vscode.window.withProgress(
       {
@@ -143,16 +145,16 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
     application.capabilities.voice = {
       webhooks: {
         answer_url: {
-          address: state.answer_url_address,
-          http_method: state.answer_url_http_method,
+          address: state.answerUrlAddress,
+          http_method: state.answerUrlHttpMethod,
         },
         fallback_answer_url: {
-          address: state.fallback_answer_url_address,
-          http_method: state.fallback_answer_url_http_method,
+          address: state.fallbackAnswerUrlAddress,
+          http_method: state.fallbackAnswerUrlHttpMethod,
         },
         event_url: {
-          address: state.event_url_address,
-          http_method: state.event_url_http_method,
+          address: state.eventUrlAddress,
+          http_method: state.eventUrlHttpMethod,
         },
       },
     };
@@ -186,16 +188,16 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
     application.capabilities.voice = {
       webhooks: {
         answer_url: {
-          address: state.answer_url_address,
-          http_method: state.answer_url_http_method,
+          address: state.answerUrlAddress,
+          http_method: state.answerUrlHttpMethod,
         },
         fallback_answer_url: {
-          address: state.fallback_answer_url_address,
-          http_method: state.fallback_answer_url_http_method,
+          address: state.fallbackAnswerUrlAddress,
+          http_method: state.fallbackAnswerUrlHttpMethod,
         },
         event_url: {
-          address: state.event_url_address,
-          http_method: state.event_url_http_method,
+          address: state.eventUrlAddress,
+          http_method: state.eventUrlHttpMethod,
         },
       },
     };
@@ -265,8 +267,8 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
     application.capabilities.rtc = {
       webhooks: {
         event_url: {
-          address: state.event_url_address,
-          http_method: state.event_url_http_method,
+          address: state.eventUrlAddress,
+          http_method: state.eventUrlHttpMethod,
         },
       },
     };
@@ -300,8 +302,8 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
     application.capabilities.rtc = {
       webhooks: {
         event_url: {
-          address: state.event_url_address,
-          http_method: state.event_url_http_method,
+          address: state.eventUrlAddress,
+          http_method: state.eventUrlHttpMethod,
         },
       },
     };
@@ -371,12 +373,12 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
     application.capabilities.messages = {
       webhooks: {
         inbound_url: {
-          address: state.inbound_url_address,
-          http_method: state.inbound_url_http_method,
+          address: state.inboundUrlAddress,
+          http_method: state.inboundUrlHttpMethod,
         },
         status_url: {
-          address: state.inbound_url_address,
-          http_method: state.inbound_url_http_method,
+          address: state.inboundUrlAddress,
+          http_method: state.inboundUrlHttpMethod,
         },
       },
     };
@@ -409,12 +411,12 @@ export class ApplicationViewDataProvider extends BaseTreeViewDataProvider {
     application.capabilities.messages = {
       webhooks: {
         inbound_url: {
-          address: state.inbound_url_address,
-          http_method: state.inbound_url_http_method,
+          address: state.inboundUrlAddress,
+          http_method: state.inboundUrlHttpMethod,
         },
         status_url: {
-          address: state.inbound_url_address,
-          http_method: state.inbound_url_http_method,
+          address: state.inboundUrlAddress,
+          http_method: state.inboundUrlHttpMethod,
         },
       },
     };

@@ -1,5 +1,5 @@
 import { Memento, QuickPickItem } from "vscode";
-import { StorageKeys } from "../enums";
+import { StorageKeys } from "../enums/storageKeys";
 
 const countries = [
   { code: "AL", name: "Albania (+ 355)" },

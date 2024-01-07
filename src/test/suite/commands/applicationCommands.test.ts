@@ -1,42 +1,41 @@
-import chai from "chai";
-import Sinon from "sinon";
-import { ApplicationCommands } from "../../../src/commands";
-import { LocalTelemetry } from "../../../src/telemetry";
-import { mocks, vonage } from "../../mocks";
+import * as assert from "assert";
+import * as Sinon from "sinon";
+import { ApplicationCommands } from "../../../commands";
+import { mocks } from "../../mocks/vscode";
+import { vonage } from "../../mocks/vonage";
 import {
   ApplicationViewDataProvider,
   ApplicationTreeItem,
-} from "../../../src/views";
-
-chai.should();
+} from "../../../views";
+import { Telemetry } from "../../../telemetry";
 
 suite("Commands:Applications", function () {
-  const telemetry = new LocalTelemetry();
-  const telemetrySendEvent = Sinon.stub(telemetry, "sendEvent");
+  const telemetryStub = Sinon.stub(Telemetry, "sendTelemetryEvent");
+
   const node = new ApplicationTreeItem(vonage.applicationMock);
 
   const viewProvider = new ApplicationViewDataProvider();
 
-  const applicationsCommands = new ApplicationCommands(
-    mocks.extensionContextMock.subscriptions,
-    telemetry,
-    viewProvider,
-  );
-
   this.beforeEach(() => {
-    telemetrySendEvent.resetHistory();
+    telemetryStub.resetHistory();
   });
 
   this.afterAll(() => {
-    telemetrySendEvent.restore();
+    telemetryStub.restore();
   });
+
+  const applicationsCommands = new ApplicationCommands(
+    mocks.extensionContextMock.subscriptions,
+    viewProvider,
+  );
 
   test("refreshAppsList refreshes appropriate view", async () => {
     const stub = Sinon.stub(viewProvider, "refresh");
 
     applicationsCommands.refreshAppsList();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -44,8 +43,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "createApplication");
 
     applicationsCommands.addApp();
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -53,8 +53,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "updateApplication");
 
     applicationsCommands.updateApp(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -62,8 +63,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "deleteApplication");
 
     applicationsCommands.deleteApp(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -71,8 +73,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "linkApplication");
 
     applicationsCommands.linkApp(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -80,8 +83,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "addVoice");
 
     applicationsCommands.voiceAdd(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -89,8 +93,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "updateVoice");
 
     applicationsCommands.voiceUpdate(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -98,8 +103,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "deleteVoice");
 
     applicationsCommands.voiceDelete(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -107,8 +113,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "addRTC");
 
     applicationsCommands.rtcAdd(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -116,8 +123,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "updateRTC");
 
     applicationsCommands.rtcUpdate(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -125,8 +133,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "deleteRTC");
 
     applicationsCommands.rtcDelete(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -134,8 +143,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "addMessages");
 
     applicationsCommands.messagesAdd(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -143,8 +153,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "updateMessages");
 
     applicationsCommands.messagesUpdate(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -152,8 +163,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "deleteMessages");
 
     applicationsCommands.messagesDelete(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -161,8 +173,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "addVBC");
 
     applicationsCommands.vbcAdd(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 
@@ -170,8 +183,9 @@ suite("Commands:Applications", function () {
     const stub = Sinon.stub(viewProvider, "deleteVBC");
 
     applicationsCommands.vbcDelete(node);
-    telemetrySendEvent.calledOnce.should.eq(true);
-    stub.calledOnce.should.eq(true);
+
+    assert.equal(telemetryStub.calledOnce, true);
+    assert.equal(stub.calledOnce, true);
     stub.restore();
   });
 });

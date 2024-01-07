@@ -4,12 +4,10 @@ import { AssignNumberFlow } from "../steps";
 import { BuyNumberFlow } from "../steps/buyNumberFlow";
 import { showWarningMessage } from "../utils";
 import { NumberTreeItem, BaseTreeViewDataProvider } from "./trees";
-
-const numberAssignmentEventEmitter = new vscode.EventEmitter<string>();
+import { numberAssignmentEventEmitter } from "../emitters";
 
 export class NumbersViewDataProvider extends BaseTreeViewDataProvider {
   private storage: vscode.Memento;
-  public onNumberAssignmentChanged = numberAssignmentEventEmitter.event;
 
   constructor(state: vscode.Memento) {
     super();

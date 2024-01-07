@@ -15,20 +15,21 @@ export class NumberTreeItem extends BaseTreeItem {
       undefined,
       "number",
     );
+    this.number.features = this.number.features || [];
     this.setDescription();
     this.setToolTip();
   }
 
   public setContextValue(): void {
     this.contextValue = `number${
-      Object.keys(this.number.features).length > 0
-        ? "-" + Object.keys(this.number.features).join("-")
+      Object.keys(this.number.features!).length > 0
+        ? "-" + Object.keys(this.number.features!).join("-")
         : ""
     }`;
   }
 
   private setDescription(): void {
-    this.description = this.number.features.join(" ").toLowerCase();
+    this.description = this.number.features!.join(" ").toLowerCase();
   }
 
   private setToolTip(): void {

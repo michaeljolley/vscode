@@ -1,12 +1,7 @@
 import * as vscode from "vscode";
 import { VonageClient } from "../client/vonageClient";
-import { StorageKeys } from "../enums";
-import {
-  getCountries,
-  getNumberTypes,
-  getSearchPatterns,
-  MultiStepInput,
-} from "../utils";
+import { StorageKeys } from "../enums/storageKeys";
+import { getCountries, getNumberTypes, MultiStepInput } from "../utils";
 
 export interface BuyNumberState {
   title: string;
@@ -15,7 +10,7 @@ export interface BuyNumberState {
   country: string;
   type?: string;
   pattern?: any;
-  search_pattern?: number;
+  searchPattern?: number;
   msisdn: string;
 }
 

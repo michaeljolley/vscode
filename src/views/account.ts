@@ -1,6 +1,6 @@
 import { Memento, TreeItemCollapsibleState } from "vscode";
 import { VonageClient } from "../client/vonageClient";
-import { StorageKeys } from "../enums";
+import { StorageKeys } from "../enums/storageKeys";
 import { BaseTreeItem, BaseTreeViewDataProvider } from "./trees";
 
 export class AccountViewDataProvider extends BaseTreeViewDataProvider {

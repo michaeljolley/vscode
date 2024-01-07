@@ -5,10 +5,10 @@ export interface RTCCapabilityState {
   title: string;
   step: number;
   totalSteps: number;
-  event_url_address: string;
-  event_url_http_method: string;
-  event_url_connection_timeout: string;
-  event_url_socket_timeout: string;
+  eventUrlAddress: string;
+  eventUrlHttpMethod: string;
+  eventUrlConnectionTimeout: string;
+  eventUrlSocketTimeout: string;
 }
 
 export abstract class RTCCapabilityFlow {
@@ -22,9 +22,9 @@ export abstract class RTCCapabilityFlow {
     this.title = title;
 
     if (existingState) {
-      state.event_url_address =
+      state.eventUrlAddress =
         existingState.application.capabilities.rtc.webhooks.event_url.address;
-      state.event_url_http_method =
+      state.eventUrlHttpMethod =
         existingState.application.capabilities.rtc.webhooks.event_url.http_method;
     }
 
@@ -38,14 +38,12 @@ export abstract class RTCCapabilityFlow {
     input: MultiStepInput,
     state: Partial<RTCCapabilityState>,
   ) {
-    state.event_url_address = await input.showInputBox({
+    state.eventUrlAddress = await input.showInputBox({
       title: this.title,
       step: 1,
       totalSteps: 2,
       value:
-        typeof state.event_url_address === "string"
-          ? state.event_url_address
-          : "",
+        typeof state.eventUrlAddress === "string" ? state.eventUrlAddress : "",
       prompt: "Event Webhook Url",
       validate: this.validateAddress,
       shouldResume: this.shouldResume,
@@ -64,12 +62,12 @@ export abstract class RTCCapabilityFlow {
       placeholder: "Event Webhook Http Method",
       items: getHTTPMethods(),
       activeItem:
-        typeof state.event_url_http_method !== "string"
-          ? state.event_url_http_method
+        typeof state.eventUrlHttpMethod !== "string"
+          ? state.eventUrlHttpMethod
           : undefined,
       shouldResume: this.shouldResume,
     });
-    state.event_url_http_method = result.label;
+    state.eventUrlHttpMethod = result.label;
   }
 
   private static shouldResume() {

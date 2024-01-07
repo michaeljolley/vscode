@@ -6,11 +6,11 @@ export interface MessageCapabilityState {
   step: number;
   totalSteps: number;
   name: string;
-  public_key: string;
-  inbound_url_address: string;
-  inbound_url_http_method: string;
-  status_url_address: string;
-  status_url_http_method: string;
+  publicKey: string;
+  inboundUrlAddress: string;
+  inboundUrlHttpMethod: string;
+  statusUrlAddress: string;
+  statusUrlHttpMethod: string;
 }
 
 export abstract class MessageCapabilityFlow {
@@ -22,17 +22,17 @@ export abstract class MessageCapabilityFlow {
   ): Promise<MessageCapabilityState> {
     const state = {} as Partial<MessageCapabilityState>;
     this.title = title;
-    state.inbound_url_http_method = "POST";
-    state.status_url_http_method = "POST";
+    state.inboundUrlHttpMethod = "POST";
+    state.statusUrlHttpMethod = "POST";
 
     if (existingState) {
-      state.inbound_url_address =
+      state.inboundUrlAddress =
         existingState.application.capabilities.voice.webhooks.inbound_url.address;
-      state.inbound_url_http_method =
+      state.inboundUrlHttpMethod =
         existingState.application.capabilities.voice.webhooks.inbound_url.http_method;
-      state.status_url_address =
+      state.statusUrlAddress =
         existingState.application.capabilities.voice.webhooks.status_url.address;
-      state.status_url_http_method =
+      state.statusUrlHttpMethod =
         existingState.application.capabilities.voice.webhooks.status_url.http_method;
     }
 
@@ -46,13 +46,13 @@ export abstract class MessageCapabilityFlow {
     input: MultiStepInput,
     state: Partial<MessageCapabilityState>,
   ) {
-    state.inbound_url_address = await input.showInputBox({
+    state.inboundUrlAddress = await input.showInputBox({
       title: this.title,
       step: 1,
       totalSteps: 2,
       value:
-        typeof state.inbound_url_address === "string"
-          ? state.inbound_url_address
+        typeof state.inboundUrlAddress === "string"
+          ? state.inboundUrlAddress
           : "",
       prompt: "Inbound Webhook Url",
       validate: this.validateAddress,
@@ -65,13 +65,13 @@ export abstract class MessageCapabilityFlow {
     input: MultiStepInput,
     state: Partial<MessageCapabilityState>,
   ) {
-    state.status_url_address = await input.showInputBox({
+    state.statusUrlAddress = await input.showInputBox({
       title: this.title,
       step: 2,
       totalSteps: 2,
       value:
-        typeof state.status_url_address === "string"
-          ? state.status_url_address
+        typeof state.statusUrlAddress === "string"
+          ? state.statusUrlAddress
           : "",
       prompt: "Status Webhook Url",
       validate: this.validateAddress,
