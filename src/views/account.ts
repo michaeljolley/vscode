@@ -1,10 +1,9 @@
-import { Memento, TreeItemCollapsibleState } from 'vscode';
-import { VonageClient } from '../client/vonageClient';
-import { StorageKeys } from '../enums';
-import { BaseTreeItem, BaseTreeViewDataProvider } from './trees';
+import { Memento, TreeItemCollapsibleState } from "vscode";
+import { VonageClient } from "../client/vonageClient";
+import { StorageKeys } from "../enums";
+import { BaseTreeItem, BaseTreeViewDataProvider } from "./trees";
 
 export class AccountViewDataProvider extends BaseTreeViewDataProvider {
-
   private storage: Memento;
 
   constructor(state: Memento) {
@@ -13,7 +12,8 @@ export class AccountViewDataProvider extends BaseTreeViewDataProvider {
   }
 
   async buildTree(): Promise<BaseTreeItem[]> {
-    const currentHideState = this.storage.get(StorageKeys.hideAccountBalance) as boolean || false;
+    const currentHideState =
+      (this.storage.get(StorageKeys.hideAccountBalance) as boolean) || false;
     let balance = "€ ----";
 
     if (!currentHideState) {
@@ -24,25 +24,28 @@ export class AccountViewDataProvider extends BaseTreeViewDataProvider {
     const accountTreeItem = new BaseTreeItem(
       `Balance: ${balance}`,
       TreeItemCollapsibleState.None,
-      'wallet-line',
+      "wallet-line",
       {
-        command: 'vonage.account.toggleBalanceView',
-        title: '',
-        arguments: undefined
+        command: "vonage.account.toggleBalanceView",
+        title: "",
+        arguments: undefined,
       },
-      'account');
+      "account",
+    );
 
     accountTreeItem.tooltip = "Click to toggle visibility";
 
-    return [
-      accountTreeItem
-    ];
+    return [accountTreeItem];
   }
 
-  async toggleBalanceView(): Promise<void>  {
-    const currentHideState = this.storage.get(StorageKeys.hideAccountBalance) as boolean || false;
+  async toggleBalanceView(): Promise<void> {
+    const currentHideState =
+      (this.storage.get(StorageKeys.hideAccountBalance) as boolean) || false;
 
-    await this.storage.update(StorageKeys.hideAccountBalance, !currentHideState);
+    await this.storage.update(
+      StorageKeys.hideAccountBalance,
+      !currentHideState,
+    );
     this.refresh();
   }
 }

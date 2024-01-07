@@ -3,38 +3,52 @@ import { resolveTooltipMarkdown } from "../../utils";
 import { BaseTreeItem } from "./baseTreeItem";
 
 export class ApplicationTreeItem extends BaseTreeItem {
-
-  constructor(
-    public application: any) {
-    super(application.name, TreeItemCollapsibleState.Collapsed, 'app-line', undefined, 'application');
+  constructor(public application: any) {
+    super(
+      application.name,
+      TreeItemCollapsibleState.Collapsed,
+      "app-line",
+      undefined,
+      "application",
+    );
     this.setContextValue();
     this.setDescription();
     this.setToolTip();
   }
 
   public setContextValue(): void {
-    this.contextValue = `application${this.application.capabilities && Object.keys(this.application.capabilities).length > 0 ? '-' + Object.keys(this.application.capabilities).join('-') : ''}`;
+    this.contextValue = `application${
+      this.application.capabilities &&
+      Object.keys(this.application.capabilities).length > 0
+        ? "-" + Object.keys(this.application.capabilities).join("-")
+        : ""
+    }`;
   }
 
   private setDescription(): void {
     const descriptions: string[] = [];
     if (this.application.capabilities.voice) {
-      descriptions.push('voice');
+      descriptions.push("voice");
     }
     if (this.application.capabilities.messages) {
-      descriptions.push('messages');
+      descriptions.push("messages");
     }
     if (this.application.capabilities.rtc) {
-      descriptions.push('rtc');
+      descriptions.push("rtc");
     }
     if (this.application.capabilities.vbc) {
-      descriptions.push('vbc');
+      descriptions.push("vbc");
     }
-    this.description = descriptions.join(' ');
+    this.description = descriptions.join(" ");
   }
 
   private setToolTip() {
-    this.tooltip = resolveTooltipMarkdown(this.applicationTooltipTemplate, { ...this.application, capabilities: [...this.convertCapabilities(this.application.capabilities)] });
+    this.tooltip = resolveTooltipMarkdown(this.applicationTooltipTemplate, {
+      ...this.application,
+      capabilities: [
+        ...this.convertCapabilities(this.application.capabilities),
+      ],
+    });
   }
 
   private convertCapabilities(capabilities: any) {

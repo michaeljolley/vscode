@@ -9,29 +9,30 @@ export interface AssignNumberState {
   name: string;
 }
 
-const title = 'Assign Number to Application';
+const title = "Assign Number to Application";
 
 export abstract class AssignNumberFlow {
-
   public static async collectInputs(): Promise<AssignNumberState> {
     const state = {} as Partial<AssignNumberState>;
-    await MultiStepInput.run(input => this.selectApplication(input, state));
+    await MultiStepInput.run((input) => this.selectApplication(input, state));
     return state as AssignNumberState;
   }
 
-  private static async selectApplication(input: MultiStepInput, state: Partial<AssignNumberState>) {
-
+  private static async selectApplication(
+    input: MultiStepInput,
+    state: Partial<AssignNumberState>,
+  ) {
     const applications = await VonageClient.application.getApplications();
 
     const result = await input.showQuickPick({
       title: title,
       step: 1,
       totalSteps: 1,
-      placeholder: 'Choose Application',
+      placeholder: "Choose Application",
       items: applications.map((a: any) => {
         return {
           label: a.name,
-          description: a.id
+          description: a.id,
         };
       }),
       shouldResume: this.shouldResume,

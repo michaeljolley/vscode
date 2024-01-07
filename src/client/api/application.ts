@@ -1,80 +1,91 @@
-import vscode from 'vscode';
-import fetch from 'node-fetch';
-import { Auth } from '../../auth';
-import { ApplicationTreeItem } from '../../views';
+import { Vonage } from "@vonage/server-sdk";
+import { Application } from "@vonage/applications";
+import { ApplicationTreeItem } from "../../views";
+import { Telemetry } from "../../telemetry";
 
 export class ApplicationAPI {
-
-  private appUrl = 'https://api.nexmo.com/v2/applications';
+  constructor(private vonage: Vonage) {}
 
   async getApplications(): Promise<any> {
-    const isAuthenticated = await Auth.isAuthenticated();
-    if (!isAuthenticated) {
-      return [];
-    }
-
     try {
-      const headers = await Auth.getHeaders();
-      const response = await fetch(this.appUrl, { method: 'GET', headers });
-      if (response.ok) {
-        const data = await response.json();
-        return data._embedded.applications;
-      } else {
-        vscode.window.showErrorMessage('There was an error retrieving applications.');
-      }
-    } catch (err) {
-      vscode.window.showErrorMessage('There was an error retrieving applications.');
+      const response = await this.vonage.applications.getApplicationPage({
+        pageSize: 100,
+      });
+      return response._embedded.applications;
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:application:getApplications:error",
+        { error: err.message },
+      );
     }
     return [];
   }
 
-  async getApplication(applicationId: string): Promise<any> {
-    const headers = await Auth.getHeaders();
-
-    const response = await fetch(`${this.appUrl}/${applicationId}`, { method: 'GET', headers });
-    const data = await response.json();
-    return data;
+  async getApplication(
+    applicationId: string,
+  ): Promise<Application | undefined> {
+    try {
+      return await this.vonage.applications.getApplication(applicationId);
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:application:getApplication:error",
+        { error: err.message },
+      );
+    }
+    return undefined;
   }
 
-  async createApplication(state: any): Promise<boolean> {
-    const headers = await Auth.getHeaders();
-
-    const body = {
-      name: state.name,
-      keys: { public_key: state.public_key }
-    };
-
-    const response = await fetch(this.appUrl, { method: 'POST', headers, body: JSON.stringify(body) });
-    if (response.ok) {
-      return true;
-    } else {
-      return false;
+  async createApplication(state: {
+    name: string;
+    publicKey: string;
+  }): Promise<boolean> {
+    try {
+      const application: Application = {
+        name: state.name,
+        keys: { publicKey: state.publicKey },
+        capabilities: {},
+      };
+      const response =
+        await this.vonage.applications.createApplication(application);
+      if (response.id) {
+        return true;
+      }
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:application:createApplication:error",
+        { error: err.message },
+      );
     }
+    return false;
   }
 
   async updateApplication(application: any): Promise<boolean> {
-    const headers = await Auth.getHeaders();
+    try {
+      const response =
+        await this.vonage.applications.updateApplication(application);
 
-    const response = await fetch(`${this.appUrl}/${application.id}`, { method: 'PUT', headers, body: JSON.stringify(application) });
-    if (response.ok) {
-      return true;
-    } else {
-      const err = await response.json();
-      console.dir(err);
-      return false;
+      if (response.id) {
+        return true;
+      }
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:application:updateApplication:error",
+        { error: err.message },
+      );
     }
-
     return false;
   }
 
   async deleteApplication(node: ApplicationTreeItem): Promise<any> {
-    const headers = await Auth.getHeaders();
-
-    const response = await fetch(`${this.appUrl}/${node.application.id}`, { method: 'DELETE', headers });
-    if (response.ok) {
+    try {
+      await this.vonage.applications.deleteApplication(node.application.id);
       return true;
-    } else {
-      return false;
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:application:deleteApplication:error",
+        { error: err.message },
+      );
     }
+    return false;
   }
 }

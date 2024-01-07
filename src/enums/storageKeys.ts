@@ -5,25 +5,21 @@ export enum StorageKeys {
   /**
    * Flag denoting to not display the survey prompt again
    */
-  doNotShowSurveyPromptAgain = 'vonageDoNotShowSurveyPromptAgain',
-  /**
-   * Flag denoting to not display the telemetry prompt again
-   */
-  doNotShowTelemetryPromptAgain = 'vonageDoNotShowTelemetryPromptAgain',
+  doNotShowSurveyPromptAgain = "vonageDoNotShowSurveyPromptAgain",
   /**
    * Last date the survey prompt was displayed
    */
-  lastSurveyDate = 'vonageLastSurveyDate',
+  lastSurveyDate = "vonageLastSurveyDate",
   /**
    * Whether to hide the account balance by default
    */
-  hideAccountBalance = 'hideAccountBalance',
+  hideAccountBalance = "hideAccountBalance",
   /**
    * Last country selected
    */
-  lastCountrySelected = 'lastCountrySelected',
+  lastCountrySelected = "lastCountrySelected",
   /**
    * Display numbers that are assigned to applications
    */
-  displayAssignedOnly = 'displayAssignedOnly'
+  displayAssignedOnly = "displayAssignedOnly",
 }

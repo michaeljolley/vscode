@@ -1,5 +1,5 @@
-import { Memento, QuickPickItem } from 'vscode';
-import { StorageKeys } from '../enums';
+import { Memento, QuickPickItem } from "vscode";
+import { StorageKeys } from "../enums";
 
 const countries = [
   { code: "AL", name: "Albania (+ 355)" },
@@ -109,16 +109,18 @@ const countries = [
   { code: "UZ", name: "Uzbekistan (+998)" },
   { code: "VE", name: "Venezuela (+58)" },
   { code: "VN", name: "Vietnam (+84)" },
-  { code: "ZM", name: "Zambia (+260)" }
+  { code: "ZM", name: "Zambia (+260)" },
 ];
 
-export function getCountries (storage: Memento): QuickPickItem[] {
-  const previousCountry: string | undefined = storage.get(StorageKeys.lastCountrySelected);
-  return countries.map ( (i) => {  
+export function getCountries(storage: Memento): QuickPickItem[] {
+  const previousCountry: string | undefined = storage.get(
+    StorageKeys.lastCountrySelected,
+  );
+  return countries.map((i) => {
     return {
       label: i.name,
       description: i.code,
-      picked: (previousCountry && previousCountry === i.code) as boolean
+      picked: (previousCountry && previousCountry === i.code) as boolean,
     };
   });
 }

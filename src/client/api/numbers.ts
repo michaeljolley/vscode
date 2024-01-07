@@ -1,162 +1,180 @@
-import { INumber } from '@vonage/server-sdk';
-import fetch from 'node-fetch';
-import querystring from 'querystring';
-import { Auth } from '../../auth';
+import * as vscode from "vscode";
+import { Vonage } from "@vonage/server-sdk";
+import { Telemetry } from "../../telemetry";
+import {
+  NumbersAvailableNumber,
+  NumbersOwnedNumber,
+  NumbersUpdateParams,
+} from "@vonage/numbers";
+import { NumbersSearchFilter } from "@vonage/numbers/dist/types";
+import { BuyNumberState } from "../../steps/buyNumberFlow";
 
 export class NumbersAPI {
+  constructor(private vonage: Vonage) {}
 
-  private accountUrl = 'https://rest.nexmo.com/account/numbers';
-  private numbersUrl = 'https://rest.nexmo.com/number';
-
-  async getNumbers(applicationId?: string): Promise<any> {
-    const isAuthenticated = await Auth.isAuthenticated();
-    if (!isAuthenticated) {
-      return [];
-    }
-
-    const headers = await Auth.getHeaders();
-    const { api_key, api_secret } = await Auth.getCredentials();
-
-    const query = {
-      api_key,
-      api_secret,
-      has_application: applicationId !== undefined,
-      application_id: applicationId
-    };
-
-    const response = await fetch(`${this.accountUrl}?${querystring.stringify(query)}`, { method: 'GET', headers });
+  async getNumbers(applicationId?: string): Promise<NumbersOwnedNumber[]> {
+    let numbers: NumbersOwnedNumber[] = [];
     try {
-      const data = await response.json();
-      return data.numbers || [];
-    } catch (err) {
-      console.dir(response);
-      return [];
+      const ownedNumbers = await this.vonage.numbers.getOwnedNumbers({
+        applicationId: applicationId,
+        hasApplication: applicationId !== undefined,
+      });
+      numbers = ownedNumbers.numbers || [];
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent("vonage:api:numbers:getNumbers:error", {
+        error: err.message,
+      });
     }
+
+    return numbers;
   }
 
-  async buyNumber(state: any): Promise<boolean> {
-    const { api_key, api_secret } = await Auth.getCredentials();
+  async buyNumber(state: BuyNumberState): Promise<boolean> {
+    try {
+      const numberParams: NumbersUpdateParams = {
+        country: state.country,
+        msisdn: state.msisdn,
+      };
 
-    const query: any = {
-      api_key,
-      api_secret
-    };
-
-    const params = new URLSearchParams();
-    params.append('country', state.country);
-    params.append('msisdn', state.msisdn);
-
-    const response = await fetch(`${this.numbersUrl}/buy?${querystring.stringify(query)}`, { method: 'POST', body: params });
-    if (response.ok) {
-      return true;
-    } else {
-      const err = await response.json();
-      console.dir(err);
-      return false;
-    }
-  }
-
-  async assignToApplication(number: any, applicationId: string): Promise<boolean> {
-    // const headers = await Auth.getHeaders();
-    const { api_key, api_secret } = await Auth.getCredentials();
-
-    number.app_id = applicationId;
-
-    const query = {
-      api_key,
-      api_secret
-    };
-
-    const params = new URLSearchParams();
-
-    Object.keys(number).forEach((key: string) => {
-      params.append(key, number[key]);
-    });
-
-    const response = await fetch(`${this.numbersUrl}/update?${querystring.stringify(query)}`, { method: 'POST', body: params });
-    if (response.ok) {
-      return true;
-    } else {
-      const err = await response.json();
-      console.dir(err);
-      return false;
+      const response = await this.vonage.numbers.buyNumber(numberParams);
+      if (!response.errorCode) {
+        return true;
+      } else {
+        Telemetry.sendTelemetryErrorEvent(
+          "vonage:api:numbers:buyNumber:error",
+          {
+            error: response.errorCode,
+          },
+        );
+        vscode.window.showErrorMessage(
+          `There was a problem buying the number. The error returned was: (${response.errorCode}) ${response.errorCodeLabel}.`,
+        );
+      }
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent("vonage:api:numbers:buyNumber:error", {
+        error: err.message,
+      });
     }
     return false;
   }
 
-  async unassignNumber(number: any): Promise<boolean> {
-    const { api_key, api_secret } = await Auth.getCredentials();
-
-    const query: any = {
-      api_key,
-      api_secret
-    };
-
-    const params = new URLSearchParams();
-    params.append('country', number.country);
-    params.append('msisdn', number.msisdn);
-
-    const response = await fetch(`${this.numbersUrl}/update?${querystring.stringify(query)}`, { method: 'POST', body: params });
-    if (response.ok) {
-      return true;
-    } else {
-      const err = await response.json();
-      console.dir(err);
-      return false;
+  async assignToApplication(
+    number: NumbersOwnedNumber,
+    applicationId: string,
+  ): Promise<boolean> {
+    try {
+      const numberParams: NumbersUpdateParams = {
+        applicationId: applicationId,
+        msisdn: number.msisdn as string,
+        country: number.country as string,
+      };
+      const response = await this.vonage.numbers.updateNumber(numberParams);
+      if (!response.errorCode) {
+        return true;
+      } else {
+        Telemetry.sendTelemetryErrorEvent(
+          "vonage:api:numbers:assignToApplication:error",
+          {
+            error: response.errorCode,
+          },
+        );
+        vscode.window.showErrorMessage(
+          `There was a problem buying the number. The error returned was: (${response.errorCode}) ${response.errorCodeLabel}.`,
+        );
+      }
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:numbers:assignToApplication:error",
+        {
+          error: err.message,
+        },
+      );
     }
+    return false;
   }
 
-  async searchNumbers(state: any): Promise<INumber[]> {
-    const { api_key, api_secret } = await Auth.getCredentials();
-
-    const query: any = {
-      api_key,
-      api_secret,
-      country: state.country
-    };
-    if (state.features) {
-      query.features = state.features;
+  async unassignNumber(number: NumbersOwnedNumber): Promise<boolean> {
+    try {
+      const numberParams: NumbersUpdateParams = {
+        msisdn: number.msisdn as string,
+        country: number.country as string,
+      };
+      const response = await this.vonage.numbers.updateNumber(numberParams);
+      if (!response.errorCode) {
+        return true;
+      } else {
+        Telemetry.sendTelemetryErrorEvent(
+          "vonage:api:numbers:unassignNumber:error",
+          {
+            error: response.errorCode,
+          },
+        );
+        vscode.window.showErrorMessage(
+          `There was a problem unassigning the number. The error returned was: (${response.errorCode}) ${response.errorCodeLabel}.`,
+        );
+      }
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:numbers:unassignNumber:error",
+        {
+          error: err.message,
+        },
+      );
     }
-    if (state.pattern) {
-      query.pattern = state.pattern;
-      query.search_pattern = state.search_pattern;
-    } 
-    if (state.type) {
-      query.type = state.type;
-    }
+    return false;
+  }
 
-    const response = await fetch(`${this.numbersUrl}/search?${querystring.stringify(query)}`, { method: 'GET' });
-    if (response.ok) {
-      const data = await response.json();
-      return data.numbers;
-    } else {
-      const err = await response.json();
-      console.dir(err);
-      return [];
+  async searchNumbers(state: any): Promise<NumbersAvailableNumber[]> {
+    try {
+      const searchFilter: NumbersSearchFilter = {
+        country: state.country,
+        pattern: state.pattern,
+        searchPattern: state.search_pattern,
+        type: state.type,
+        features: state.features,
+      };
+
+      const response =
+        await this.vonage.numbers.getAvailableNumbers(searchFilter);
+      return response.numbers || [];
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:numbers:searchNumbers:error",
+        {
+          error: err.message,
+        },
+      );
     }
     return [];
-
   }
 
-  async cancelNumber(number: INumber): Promise<boolean> {
-    const { api_key, api_secret } = await Auth.getCredentials();
-
-    const query: any = {
-      api_key,
-      api_secret
-    };
-
-    const params = new URLSearchParams();
-    params.append('country', number.country);
-    params.append('msisdn', number.msisdn);
-
-    const response = await fetch(`${this.numbersUrl}/cancel?${querystring.stringify(query)}`, { method: 'POST', body: params });
-    if (response.ok) {
-      return true;
-    } else {
-      const err = await response.json();
-      console.dir(err);
-      return false;
+  async cancelNumber(number: NumbersOwnedNumber): Promise<boolean> {
+    try {
+      const numberParams: NumbersUpdateParams = {
+        msisdn: number.msisdn as string,
+        country: number.country as string,
+      };
+      const response = await this.vonage.numbers.cancelNumber(numberParams);
+      if (!response.errorCode) {
+        return true;
+      } else {
+        Telemetry.sendTelemetryErrorEvent(
+          "vonage:api:numbers:cancelNumber:error",
+          {
+            error: response.errorCode,
+          },
+        );
+        vscode.window.showErrorMessage(
+          `There was a problem canceling the number. The error returned was: (${response.errorCode}) ${response.errorCodeLabel}.`,
+        );
+      }
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent(
+        "vonage:api:numbers:cancelNumber:error",
+        {
+          error: err.message,
+        },
+      );
     }
   }
 }

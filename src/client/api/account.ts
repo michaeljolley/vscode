@@ -1,32 +1,22 @@
-import fetch from 'node-fetch';
-import querystring from 'querystring';
-import { Auth } from '../../auth';
+import { Vonage } from "@vonage/server-sdk";
+import { Telemetry } from "../../telemetry";
 
 export class AccountAPI {
-
-  private appUrl = 'https://rest.nexmo.com/account';
+  constructor(private vonage: Vonage) {}
 
   /**
    * Retrieves the account balance of the currently authenticated
    * user from the Vonage Account API
    */
-  async getBalance(): Promise<number> {
-    const isAuthenticated = await Auth.isAuthenticated();
-    if (!isAuthenticated) {
-      return 0;
+  public async getBalance(): Promise<number> {
+    try {
+      var balance = await this.vonage.accounts.getBalance();
+      return balance.value;
+    } catch (err: any) {
+      Telemetry.sendTelemetryErrorEvent("vonage:api:account:getBalance:error", {
+        error: err.message,
+      });
     }
-
-    const headers = await Auth.getHeaders();
-    const { api_key, api_secret } = await Auth.getCredentials();
-
-    const query = {
-      api_key,
-      api_secret
-    };
-
-    const response = await fetch(`${this.appUrl}/get-balance?${querystring.stringify(query)}`, { method: 'GET', headers });
-    const data = await response.json();
-    return data.value;
+    return 0;
   }
-
 }

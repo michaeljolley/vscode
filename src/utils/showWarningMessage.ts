@@ -1,13 +1,13 @@
-import { MessageItem, window } from 'vscode';
-import { openUrl } from './openUrl';
+import { MessageItem, window } from "vscode";
+import { openUrl } from "./openUrl";
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 namespace DialogResponses {
-  export const yes: MessageItem = { title: 'Yes' };
-  export const no: MessageItem = { title: 'No' };
-  export const cancel: MessageItem = { title: 'Cancel' };
-  export const deleteResponse: MessageItem = { title: 'Delete' };
-  export const learnMore: MessageItem = { title: 'Learn more' };
+  export const yes: MessageItem = { title: "Yes" };
+  export const no: MessageItem = { title: "No" };
+  export const cancel: MessageItem = { title: "Cancel" };
+  export const deleteResponse: MessageItem = { title: "Delete" };
+  export const learnMore: MessageItem = { title: "Learn more" };
 }
 
 /**
@@ -18,7 +18,11 @@ namespace DialogResponses {
  * @param learnMoreLink Optional url to provide as a "learn more" link
  * @param args Optional arguments to provide the built-in VS Code warning message
  */
-export async function showWarningMessage(message: string, learnMoreLink?: string, ...args: any[]): Promise<boolean> {
+export async function showWarningMessage(
+  message: string,
+  learnMoreLink?: string,
+  ...args: any[]
+): Promise<boolean> {
   if (learnMoreLink) {
     args.push(DialogResponses.learnMore);
   }

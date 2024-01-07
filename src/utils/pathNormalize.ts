@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from "path";
 import { OSType } from "../enums";
 
 /**
@@ -7,7 +7,7 @@ import { OSType } from "../enums";
  * @param platformOS Platform to format path for
  */
 export function pathNormalize(targetPath: string, platformOS?: OSType): string {
-  return platformOS === OSType.windows ?
-    path.win32.normalize(targetPath).replace(/\//g, '\\') :
-    path.posix.normalize(targetPath).replace(/\\/g, '/');
+  return platformOS === OSType.windows
+    ? path.win32.normalize(targetPath).replace(/\//g, "\\")
+    : path.posix.normalize(targetPath).replace(/\\/g, "/");
 }

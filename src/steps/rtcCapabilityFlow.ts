@@ -12,43 +12,61 @@ export interface RTCCapabilityState {
 }
 
 export abstract class RTCCapabilityFlow {
+  private static title = "";
 
-  private static title = '';
-
-  public static async collectInputs(title: string, existingState?: ApplicationTreeItem): Promise<RTCCapabilityState> {
+  public static async collectInputs(
+    title: string,
+    existingState?: ApplicationTreeItem,
+  ): Promise<RTCCapabilityState> {
     const state = {} as Partial<RTCCapabilityState>;
     this.title = title;
 
     if (existingState) {
-      state.event_url_address = existingState.application.capabilities.rtc.webhooks.event_url.address;
-      state.event_url_http_method = existingState.application.capabilities.rtc.webhooks.event_url.http_method;
+      state.event_url_address =
+        existingState.application.capabilities.rtc.webhooks.event_url.address;
+      state.event_url_http_method =
+        existingState.application.capabilities.rtc.webhooks.event_url.http_method;
     }
 
-    await MultiStepInput.run(input => this.inputEventUrlAddress(input, state));
+    await MultiStepInput.run((input) =>
+      this.inputEventUrlAddress(input, state),
+    );
     return state as RTCCapabilityState;
   }
 
-  private static async inputEventUrlAddress(input: MultiStepInput, state: Partial<RTCCapabilityState>) {
+  private static async inputEventUrlAddress(
+    input: MultiStepInput,
+    state: Partial<RTCCapabilityState>,
+  ) {
     state.event_url_address = await input.showInputBox({
       title: this.title,
       step: 1,
       totalSteps: 2,
-      value: typeof state.event_url_address === 'string' ? state.event_url_address : '',
-      prompt: 'Event Webhook Url',
+      value:
+        typeof state.event_url_address === "string"
+          ? state.event_url_address
+          : "",
+      prompt: "Event Webhook Url",
       validate: this.validateAddress,
-      shouldResume: this.shouldResume
+      shouldResume: this.shouldResume,
     });
     return (input: MultiStepInput) => this.inputEventHttpMethod(input, state);
   }
 
-  private static async inputEventHttpMethod(input: MultiStepInput, state: Partial<RTCCapabilityState>) {
+  private static async inputEventHttpMethod(
+    input: MultiStepInput,
+    state: Partial<RTCCapabilityState>,
+  ) {
     const result = await input.showQuickPick({
       title: this.title,
       step: 1,
       totalSteps: 2,
-      placeholder: 'Event Webhook Http Method',
+      placeholder: "Event Webhook Http Method",
       items: getHTTPMethods(),
-      activeItem: typeof state.event_url_http_method !== 'string' ? state.event_url_http_method : undefined,
+      activeItem:
+        typeof state.event_url_http_method !== "string"
+          ? state.event_url_http_method
+          : undefined,
       shouldResume: this.shouldResume,
     });
     state.event_url_http_method = result.label;
@@ -60,8 +78,10 @@ export abstract class RTCCapabilityFlow {
       // noop
     });
   }
-  
+
   private static async validateAddress(address: string) {
-    return (address && address.trim().length > 0) ? undefined : 'Address is required';
+    return address && address.trim().length > 0
+      ? undefined
+      : "Address is required";
   }
 }

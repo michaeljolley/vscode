@@ -1,10 +1,12 @@
-import { Event, EventEmitter, TreeDataProvider, TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { BaseTreeItem } from './baseTreeItem';
+import { Event, EventEmitter, TreeDataProvider, TreeItem } from "vscode";
+import { BaseTreeItem } from "./baseTreeItem";
 
 export class BaseTreeViewDataProvider implements TreeDataProvider<TreeItem> {
   private treeItems: TreeItem[] | null = null;
-  private _onDidChangeTreeData: EventEmitter<TreeItem | null> = new EventEmitter<TreeItem | null>();
-  readonly onDidChangeTreeData: Event<TreeItem | null> = this._onDidChangeTreeData.event;
+  private _onDidChangeTreeData: EventEmitter<TreeItem | null> =
+    new EventEmitter<TreeItem | null>();
+  readonly onDidChangeTreeData: Event<TreeItem | null> =
+    this._onDidChangeTreeData.event;
 
   public refresh() {
     this.treeItems = null;
